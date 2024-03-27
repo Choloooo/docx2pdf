@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Converted PDF</title>
+  </head>
+  <body>
+    <h1>Converted PDF</h1>
+    {% if pdf_url %}
+    <p>Click the link below to download the converted PDF:</p>
+    <a href="{{ pdf_url }}" download="{{ pdf_filename }}">Download PDF</a>
+    {% else %}
+    <p>Failed to convert the file.</p>
+    {% endif %}
+  </body>
+</html>

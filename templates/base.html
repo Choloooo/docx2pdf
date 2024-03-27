@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Word to PDF Converter{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      /* Global styles */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+        color: #333333;
+      }
+
+      /* Navbar styles */
+      nav {
+        background-color: #ffffff;
+        padding: 10px 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 20px;
+      }
+
+      nav ul li a {
+        text-decoration: none;
+        color: #333333;
+        transition: color 0.3s ease;
+      }
+
+      nav ul li a:hover {
+        color: #007bff;
+      }
+
+      /* Off-canvas menu */
+      .offcanvas {
+        display: none; /* Hide initially */
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 250px;
+        height: 100%;
+        background-color: #ffffff;
+        box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Show offcanvas menu when screen size is smaller */
+      @media (max-width: 768px) {
+        .offcanvas.open {
+          display: block;
+        }
+
+        nav ul {
+          display: none; /* Hide navbar links */
+        }
+      }
+
+      /* Main content */
+      .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+      }
+
+      /* Toggle button */
+      .toggle-btn {
+        display: none; /* Hide initially */
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        cursor: pointer;
+        font-size: 20px;
+        background-color: transparent;
+        border: none;
+        outline: none;
+      }
+
+      /* Show toggle button when screen size is smaller */
+      @media (max-width: 768px) {
+        .toggle-btn {
+          display: block;
+        }
+      }
+
+      /* Hamburger button */
+      .toggle-btn::before {
+        content: "\2630"; /* Unicode character for ☰ symbol */
+        display: block;
+        font-size: 28px;
+      }
+
+      .toggle-btn.active::before {
+        content: "\00D7"; /* Unicode character for ✕ symbol */
+      }
+
+      /* Close button */
+      .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+        font-size: 24px;
+        color: #333333;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="#">Word2PDF</a></li>
+        <li><a href="#">PDF2Word</a></li>
+        <li><a href="#">PPT2PDF</a></li>
+        <li><a href="#">Merge PDF</a></li>
+        <li><a href="#">Sign PDF</a></li>
+      </ul>
+      <button class="toggle-btn" onclick="toggleMenu()"></button>
+    </nav>
+
+    <div class="offcanvas" id="offcanvas">
+      <button class="close-btn" onclick="toggleMenu()">&#10005;</button>
+      <ul>
+        <li><a href="#">Word2PDF</a></li>
+        <li><a href="#">PDF2Word</a></li>
+        <li><a href="#">PPT2PDF</a></li>
+        <li><a href="#">Merge PDF</a></li>
+        <li><a href="#">Sign PDF</a></li>
+      </ul>
+    </div>
+
+    <div class="container">
+      {% block content %}
+      <!-- Content of child templates will be placed here -->
+      {% endblock %}
+    </div>
+
+    <!-- Include your JavaScript files here -->
+    <script>
+      function toggleMenu() {
+        var offcanvas = document.getElementById("offcanvas");
+        var toggleBtn = document.querySelector(".toggle-btn");
+        offcanvas.classList.toggle("open");
+        toggleBtn.classList.toggle("active");
+      }
+    </script>
+  </body>
+</html>

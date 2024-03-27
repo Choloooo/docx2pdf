@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebRTC Video Chat</title>
+  </head>
+  <body>
+    <h1>WebRTC Video Chat</h1>
+
+    <!-- Video elements for local and remote streams -->
+    <video id="localVideo" autoplay muted></video>
+    <video id="remoteVideo" autoplay></video>
+
+    <!-- Buttons to start and end the call -->
+    <button id="startCall">Start Call</button>
+    <button id="endCall" style="display: none">End Call</button>
+
+    <!-- Button to share screen -->
+    <button id="shareScreen" style="display: none">Share Screen</button>
+
+    <!-- Display room ID -->
+    <p id="roomIdDisplay" style="display: none">
+      Room ID: <span id="roomId"></span>
+    </p>
+
+    <script>
+      let localStream;
+      let peerConnection;
+      let roomId;
+
+      // Function to start the call
+      async function startCall() {
+        try {
+          // Generate room ID
+          roomId = generateRoomId();
+          document.getElementById("roomId").textContent = roomId;
+          document.getElementById("roomIdDisplay").style.display = "block";
+
+          // Construct shareable link
+          const shareableLink =
+            window.location.href.split("?")[0] + "?roomId=" + roomId;
+          console.log("Share this link to invite others:", shareableLink);
+
+          // Get access to the user's camera and microphone
+          localStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+          });
+
+          const localVideo = document.getElementById("localVideo");
+          localVideo.srcObject = localStream;
+
+          // Create a peer connection object
+          peerConnection = new RTCPeerConnection();
+
+          // Add the local stream to the peer connection
+          localStream.getTracks().forEach((track) => {
+            peerConnection.addTrack(track, localStream);
+          });
+
+          // Event handler to receive remote stream
+          peerConnection.ontrack = (event) => {
+            const remoteVideo = document.getElementById("remoteVideo");
+            if (!remoteVideo.srcObject) {
+              remoteVideo.srcObject = event.streams[0];
+            }
+          };
+
+          // Show end call and share screen buttons
+          document.getElementById("startCall").style.display = "none";
+          document.getElementById("endCall").style.display = "inline-block";
+          document.getElementById("shareScreen").style.display = "inline-block";
+        } catch (error) {
+          console.error("Error accessing media devices:", error);
+        }
+      }
+
+      // Function to generate a random room ID
+      function generateRoomId() {
+        return Math.random().toString(36).substring(2, 8);
+      }
+
+      // Function to share screen
+      async function shareScreen() {
+        try {
+          // Get access to the user's screen
+          const screenStream = await navigator.mediaDevices.getDisplayMedia({
+            video: true,
+          });
+
+          // Replace camera stream with screen stream
+          const localVideo = document.getElementById("localVideo");
+          localVideo.srcObject = screenStream;
+
+          // Replace camera track with screen track in peer connection
+          const cameraTrack = localStream.getVideoTracks()[0];
+          peerConnection
+            .getSenders()
+            .find((sender) => sender.track === cameraTrack)
+            .replaceTrack(screenStream.getVideoTracks()[0]);
+
+          // Stop the camera stream
+          localStream.getTracks().forEach((track) => track.stop());
+
+          // Event handler to stop screen sharing when stream ends
+          screenStream.getVideoTracks()[0].onended = () => {
+            // Replace screen track with camera track in peer connection
+            peerConnection
+              .getSenders()
+              .find(
+                (sender) => sender.track === screenStream.getVideoTracks()[0]
+              )
+              .replaceTrack(localStream.getVideoTracks()[0]);
+
+            // Replace screen stream with camera stream in local video element
+            localVideo.srcObject = localStream;
+
+            // Start the camera stream again
+            localStream.getTracks().forEach((track) => {
+              peerConnection.addTrack(track, localStream);
+            });
+          };
+
+          // Hide the screen sharing button
+          document.getElementById("shareScreen").style.display = "none";
+        } catch (error) {
+          console.error("Error sharing screen:", error);
+        }
+      }
+
+      // Function to end the call
+      function endCall() {
+        // End call functionality (as shown in the previous response)
+      }
+
+      // Attach event listeners to call buttons
+      document.getElementById("startCall").addEventListener("click", startCall);
+      document.getElementById("endCall").addEventListener("click", endCall);
+      document
+        .getElementById("shareScreen")
+        .addEventListener("click", shareScreen);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  MyBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: convertdoc2pdf
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+              - s3:GetObject
+              - s3:GetObjectVersion
+            Resource: arn:aws:s3:::convertdoc2pdf/*
+          - Sid: PublicListBucket
+            Effect: Allow
+            Principal: "*"
+            Action:
+              - s3:ListBucket
+            Resource: arn:aws:s3:::convertdoc2pdf
