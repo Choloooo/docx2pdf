@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+{% extends 'base.html' %} {% block content %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Feature Coming Soon{% endblock %}</title>
+    <style>
+      .container {
+        justify-content: center;
+        align-items: center;
+        margin: 200px auto; /* Center horizontally and add margin */
+        text-align: center;
+      }
+      h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #116547;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      p {
+        font-size: 20px;
+        margin-bottom: 40px;
+        line-height: 1.5;
+      }
+      .btn {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #4caf50;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 30px;
+        font-size: 18px;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .btn:hover {
+        background-color: #45a049;
+      }
+      /* Countdown timer */
+      #countdown {
+        margin-top: 20px;
+      }
+      .countdown-box {
+        display: inline-block;
+        margin: 0 10px;
+        padding: 10px 20px;
+        background-color: #fffff4;
+        color: #116547;
+        border-radius: 5px;
+        font-size: 24px;
+      }
+      /* Animation */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .fadeIn {
+        animation: fadeIn 0.5s ease-out;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container fadeIn">
+      <h1>Feature Coming Soon</h1>
+      <p>This feature is currently under development. Stay tuned!</p>
+      <a href="/" class="btn">Back to Home</a>
+      <div id="countdown"></div>
+      <!-- Countdown timer -->
+    </div>
+
+    <script>
+      // Set the fixed target date for the countdown timer
+      var targetDate = new Date("2024-10-01T00:00:00");
+
+      // Update the countdown timer every second
+      var countdownInterval = setInterval(function () {
+        var now = new Date().getTime();
+        var distance = targetDate - now;
+
+        // Calculate days, hours, minutes, and seconds remaining
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Display the countdown timer
+        document.getElementById("countdown").innerHTML = `
+          <div class="countdown-box">${days}d</div>
+          <div class="countdown-box">${hours}h</div>
+          <div class="countdown-box">${minutes}m</div>
+          <div class="countdown-box">${seconds}s</div>
+        `;
+
+        // If the countdown is over, display a message
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          document.getElementById("countdown").innerHTML =
+            "Feature is now live!";
+        }
+      }, 1000); // Update every second
+    </script>
+  </body>
+</html>
+
+{% endblock %}

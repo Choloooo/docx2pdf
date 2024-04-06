@@ -1,51 +1,66 @@
+# views.py
+
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.files.storage import default_storage
-import docx2pdf
+from io import BytesIO
+from docx import Document
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
 import os
-import uuid
 
-from converter import settings
-from .forms import UploadForm
-import traceback
-import os
-from django.core.files.storage import default_storage
-from converter import settings
-from .forms import UploadForm
-import docx2pdf
+def word_to_pdf(request):
+    if request.method == 'POST' and request.FILES['file']:
+        # Get the uploaded DOCX file from the request
+        docx_file = request.FILES['file']
+        
+        # Read the content of the DOCX file
+        docx_doc = Document(docx_file)
 
-def convert_to_pdf(request):
-    if request.method == 'POST':
-        form = UploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES['file']
-            
-            # User uploads a DOCX file through the frontend
-            
-            # Backend receives the file, validates it, and saves it to S3 with a unique name under the 'docx' directory
-            file_path = default_storage.save(f'docx/{uuid.uuid4()}.docx', file)
+        # Create a buffer for the PDF content
+        buffer = BytesIO()
 
-            # Backend triggers the conversion process using docx2pdf.convert()
-            try:
-                # Convert the file to PDF
-                output_pdf_name = os.path.splitext(file_path)[0] + '.pdf'
-                output_pdf_path = f'pdf/{os.path.basename(output_pdf_name)}'
-                docx2pdf.convert(file_path, output_pdf_path)
+        # Create a PDF document
+        pdf = SimpleDocTemplate(buffer, pagesize=letter)
+        styles = getSampleStyleSheet()
 
-                # Converted PDF file is saved to S3 with a unique name under the 'pdf' directory
-                # Construct S3 URLs for both DOCX and PDF files
-                docx_url = f'https://{settings.AWS_S3_CUSTOM_DOMAIN}/{file_path}'
-                pdf_url = f'https://{settings.AWS_S3_CUSTOM_DOMAIN}/{output_pdf_path}'
-                print('PDF converted and saved to:', output_pdf_path)
-                print('Download your PDF here:', pdf_url)
+        # Generate PDF content from the DOCX document
+        pdf_content = []
+        for paragraph in docx_doc.paragraphs:
+            pdf_content.append(Paragraph(paragraph.text, styles["Normal"]))
 
-                # Response containing the URLs is sent back to the frontend
-                return JsonResponse({'docx_url': docx_url, 'pdf_url': pdf_url})
-            except Exception as e:
-                error_msg = f'Error converting file: {e}'
-                print(error_msg)
-                return JsonResponse({'error': error_msg}, status=500)
-            
-    else:
-        form = UploadForm()
-    return render(request, 'converter/upload.html', {'form': form})
+        # Build the PDF document
+        pdf.build(pdf_content)
+
+        # Get the PDF content from the buffer
+        pdf_buffer = buffer.getvalue()
+
+        # Save PDF to Amazon S3
+        pdf_filename = f'pdf/{os.path.splitext(docx_file.name)[0]}.pdf'
+        default_storage.save(pdf_filename, BytesIO(pdf_buffer))
+
+        # Get the URL of the saved PDF file
+        pdf_url = default_storage.url(pdf_filename)
+        
+        
+        print("Download URL:", pdf_url)
+
+        # Return JSON response with PDF URL
+        return JsonResponse({'pdf_url': pdf_url})
+
+    return render(request, 'converter/upload.html')
+
+
+
+def pdf_to_word(request):
+    return render(request, 'comingsoon.html')
+
+def ppt_to_pdf(request):
+    return render(request, 'comingsoon.html')
+
+def merge_pdf(request):
+    return render(request, 'comingsoon.html')
+
+def sign_pdf(request):
+    return render(request, 'comingsoon.html')
