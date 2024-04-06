@@ -16,6 +16,10 @@
         padding: 0;
         background-color: #f5f5f5;
         color: #333333;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        background-color: #f5f5f5;
       }
 
       /* Navbar styles */
@@ -23,6 +27,19 @@
         background-color: #ffffff;
         padding: 10px 20px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center; /* Align items vertically */
+        justify-content: space-between; /* Align items horizontally */
+      }
+
+      nav h1 {
+        color: #116547; /* Colorful text */
+        margin: 0;
+        padding: 0;
+        font-size: 24px; /* Adjust font size as needed */
+        font-family: "Roboto Slab", serif; /* Readable font with personality */
+        text-transform: uppercase;
+        letter-spacing: 2px; /* Add letter spacing for a better look */
       }
 
       nav ul {
@@ -30,10 +47,10 @@
         margin: 0;
         padding: 0;
         text-align: center;
+        display: flex; /* Align items horizontally */
       }
 
       nav ul li {
-        display: inline;
         margin-right: 20px;
       }
 
@@ -59,6 +76,27 @@
         box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
       }
 
+      /* Off-canvas menu items */
+      .offcanvas ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .offcanvas ul li {
+        padding: 15px 20px; /* Adjust padding for spacing */
+        margin-bottom: 10px; /* Add margin between items */
+      }
+
+      .offcanvas ul li a {
+        text-decoration: none;
+        color: #333333;
+        transition: color 0.3s ease;
+      }
+
+      .offcanvas ul li a:hover {
+        color: #007bff;
+      }
+
       /* Show offcanvas menu when screen size is smaller */
       @media (max-width: 768px) {
         .offcanvas.open {
@@ -71,11 +109,6 @@
       }
 
       /* Main content */
-      .container {
-        max-width: 1200px;
-        margin: 20px auto;
-        padding: 0 20px;
-      }
 
       /* Toggle button */
       .toggle-btn {
@@ -117,28 +150,51 @@
         font-size: 24px;
         color: #333333;
       }
+
+      /* Footer styles */
+      footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 20px 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
     </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <nav>
+      <a
+        href="{% url 'word2pdf' %}"
+        style="text-decoration: none; color: #116547"
+      >
+        <h1 style="font-weight: bold; margin: 0">PDFFilly</h1>
+      </a>
+
       <ul>
-        <li><a href="#">Word2PDF</a></li>
-        <li><a href="#">PDF2Word</a></li>
-        <li><a href="#">PPT2PDF</a></li>
-        <li><a href="#">Merge PDF</a></li>
-        <li><a href="#">Sign PDF</a></li>
+        <li><a href="{% url 'word2pdf' %}">Word2PDF</a></li>
+        <li><a href="{% url 'PDF2Word' %}">PDF2Word</a></li>
+        <li><a href="{% url 'PPT2PDF' %}">PPT2PDF</a></li>
+        <li><a href="{% url 'MergePDF' %}">Merge PDF</a></li>
+        <li><a href="{% url 'SignPDF' %}">Sign PDF</a></li>
       </ul>
+
       <button class="toggle-btn" onclick="toggleMenu()"></button>
     </nav>
 
     <div class="offcanvas" id="offcanvas">
       <button class="close-btn" onclick="toggleMenu()">&#10005;</button>
       <ul>
-        <li><a href="#">Word2PDF</a></li>
-        <li><a href="#">PDF2Word</a></li>
-        <li><a href="#">PPT2PDF</a></li>
-        <li><a href="#">Merge PDF</a></li>
-        <li><a href="#">Sign PDF</a></li>
+        <li><a href="{% url 'word2pdf' %}">Word2PDF</a></li>
+        <li><a href="{% url 'PDF2Word' %}">PDF2Word</a></li>
+        <li><a href="{% url 'PPT2PDF' %}">PPT2PDF</a></li>
+        <li><a href="{% url 'MergePDF' %}">Merge PDF</a></li>
+        <li><a href="{% url 'SignPDF' %}">Sign PDF</a></li>
       </ul>
     </div>
 
@@ -148,6 +204,7 @@
       {% endblock %}
     </div>
 
+    <footer>&copy; 2024 Word to PDF Converter. All rights reserved.</footer>
     <!-- Include your JavaScript files here -->
     <script>
       function toggleMenu() {
